@@ -1515,6 +1515,7 @@ pub fn Formatter(comptime formatFn: anytype) type {
 /// Ignores '_' character in `buf`.
 /// See also `parseUnsigned`.
 pub fn parseInt(comptime T: type, buf: []const u8, base: u8) ParseIntError!T {
+    comptime assert(@typeInfo(T) == .int); // result type must be an integer
     return parseIntWithGenericCharacter(T, u8, buf, base);
 }
 
@@ -1525,6 +1526,7 @@ pub fn parseIntWithGenericCharacter(
     buf: []const Character,
     base: u8,
 ) ParseIntError!Result {
+    comptime assert(@typeInfo(Result) == .int); // result type must be an integer
     if (buf.len == 0) return error.InvalidCharacter;
     if (buf[0] == '+') return parseIntWithSign(Result, Character, buf[1..], base, .pos);
     if (buf[0] == '-') return parseIntWithSign(Result, Character, buf[1..], base, .neg);
@@ -1562,7 +1564,7 @@ test parseInt {
     try std.testing.expectError(error.InvalidCharacter, parseInt(u32, "-", 10));
     try std.testing.expectError(error.InvalidCharacter, parseInt(i32, "-", 10));
 
-    // autodectect the base
+    // autodetect the base
     try std.testing.expectEqual(111, try parseInt(i32, "111", 0));
     try std.testing.expectEqual(111, try parseInt(i32, "1_1_1", 0));
     try std.testing.expectEqual(111, try parseInt(i32, "1_1_1", 0));
@@ -1598,6 +1600,7 @@ fn parseIntWithSign(
     base: u8,
     comptime sign: enum { pos, neg },
 ) ParseIntError!Result {
+    comptime assert(@typeInfo(Result) == .int); // result type must be an integer
     if (buf.len == 0) return error.InvalidCharacter;
 
     var buf_base = base;
@@ -1671,6 +1674,7 @@ fn parseIntWithSign(
 /// Ignores '_' character in `buf`.
 /// See also `parseInt`.
 pub fn parseUnsigned(comptime T: type, buf: []const u8, base: u8) ParseIntError!T {
+    comptime assert(@typeInfo(T) == .int); // result type must be an integer
     return parseIntWithSign(T, u8, buf, base, .pos);
 }
 
